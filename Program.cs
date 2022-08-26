@@ -85,7 +85,7 @@ namespace CSK
 
             foreach (var output in outputArr)
             {
-                Console.WriteLine($"txn id : {output.transactionId} with count {output.ancestorCount}");
+                Console.WriteLine($"txn id : {output.transactionId} with count {output.ancestorCount-1}");
             }
         }
 
