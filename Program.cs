@@ -10,7 +10,7 @@ namespace CSK
     internal class Program
     {
         private static Dictionary<string, bool> transactionVisited;
-        private static readonly int TOTAL_COUNT = 100;
+        private static readonly int TOTAL_COUNT = 2875;
         private static HttpClient httpClient;
 
         static Program()
@@ -21,7 +21,7 @@ namespace CSK
         {
             string url = $"https://blockstream.info/api/block/000000000000000000076c036ff5119e5a5a74df77abf64203473364509f7732/txs/{count}";
 
-            var httpResponse =  await httpClient.GetAsync(url);
+            var httpResponse = await httpClient.GetAsync(url);
             var response = await httpResponse.Content.ReadAsStringAsync();
             return JsonConvert.DeserializeObject<List<Transaction>>(response);
         }
@@ -45,13 +45,10 @@ namespace CSK
             int count = 1;
             transactionVisited[transactionid] = true;
 
-            if (transactions[transactionid] != null && transactions[transactionid].input != null)
-                return count;
-
             List<Input> inputs = transactions[transactionid].input;
             foreach (var txId in inputs.Select(x=>x.txnId))
             {
-                if (transactionVisited.ContainsKey(txId) && !transactionVisited[txId])
+                if (transactions.ContainsKey(txId))
                 {
                     count += CalculateHeight(txId, transactions);
                 }
@@ -64,6 +61,7 @@ namespace CSK
             var transactionList = await GetTransactionInBlock();
             transactionVisited = new Dictionary<string, bool>();
             Dictionary<string, Transaction> transactions = new Dictionary<string, Transaction>();
+            
             foreach (var item in transactionList)
             {
                 transactions.Add(item.txnId, item);
